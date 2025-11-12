@@ -1,0 +1,17 @@
+Component,Type,Signals,Primary Use Case,Protocols
+OTLP Receiver,Receiver,"Traces, Metrics, Logs, Profiles",Receiving data from OTel SDKs,"gRPC (port 4317), HTTP (port 4318)"
+Prometheus Receiver,Receiver,Metrics only,Migrating from Prometheus to OTel,HTTP (pull-based)
+Jaeger Receiver,Receiver,Traces only,Legacy Jaeger instrumentation,"gRPC (port 14250), Thrift HTTP (port 14268), Thrift Binary"
+Zipkin Receiver,Receiver,Traces only,Legacy Zipkin instrumentation,HTTP (port 9411)
+Filelog Receiver,Receiver,Logs only,Legacy applications writing to files,File system
+Host Metrics Receiver,Receiver,Metrics only,Server monitoring,Local system calls
+Kafka Receiver,Receiver,"Traces, Metrics, Logs",Async telemetry ingestion,Kafka protocol
+OTLP Exporter,Exporter,"Traces, Metrics, Logs, Profiles",Vendor-neutral export,"gRPC (recommended), HTTP"
+Prometheus Exporter,Exporter,Metrics only,Existing Prometheus infrastructure,HTTP (pull-based)
+Prometheus Remote Write Exporter,Exporter,Metrics only,"Mimir, Cortex, Thanos backends",HTTP (push-based)
+Jaeger Exporter,Exporter,Traces only,Jaeger UI for trace visualization,"gRPC, Thrift HTTP"
+Datadog Exporter,Exporter,"Traces, Metrics, Logs",Datadog users wanting optimal integration,HTTP
+Elasticsearch Exporter,Exporter,"Traces, Logs",ELK/EFK stack users,HTTP
+Kafka Exporter,Exporter,"Traces, Metrics, Logs",Multiple downstream consumers,Kafka protocol
+File Exporter,Exporter,"Traces, Metrics, Logs",Development and testing,File system
+Logging/Debug Exporter,Exporter,"Traces, Metrics, Logs",Troubleshooting pipelines,stdout

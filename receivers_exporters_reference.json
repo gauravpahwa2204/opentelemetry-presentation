@@ -1,0 +1,326 @@
+{
+  "major_receivers": {
+    "otlp": {
+      "name": "OTLP Receiver",
+      "description": "Native OpenTelemetry protocol receiver",
+      "protocols": [
+        "gRPC (port 4317)",
+        "HTTP (port 4318)"
+      ],
+      "usage": "Primary receiver for OTel-instrumented applications",
+      "signals": [
+        "Traces",
+        "Metrics",
+        "Logs",
+        "Profiles"
+      ],
+      "configuration": "receivers:\n  otlp:\n    protocols:\n      grpc:\n        endpoint: 0.0.0.0:4317\n      http:\n        endpoint: 0.0.0.0:4318\n        cors:\n          allowed_origins: [\"*\"]",
+      "functioning": "Accepts OTLP data via gRPC or HTTP, deserializes Protocol Buffers, forwards to pipeline",
+      "use_cases": [
+        "Receiving data from OTel SDKs",
+        "Primary receiver for all signal types",
+        "Production microservices telemetry"
+      ]
+    },
+    "prometheus": {
+      "name": "Prometheus Receiver",
+      "description": "Scrapes Prometheus metrics endpoints",
+      "protocols": [
+        "HTTP (pull-based)"
+      ],
+      "usage": "Integrate existing Prometheus infrastructure",
+      "signals": [
+        "Metrics only"
+      ],
+      "configuration": "receivers:\n  prometheus:\n    config:\n      scrape_configs:\n        - job_name: 'app-metrics'\n          scrape_interval: 30s\n          static_configs:\n            - targets: ['localhost:8080']",
+      "functioning": "Acts like Prometheus server, scrapes /metrics endpoints, converts to OTLP format",
+      "use_cases": [
+        "Migrating from Prometheus to OTel",
+        "Collecting metrics from existing Prometheus exporters",
+        "Infrastructure monitoring"
+      ]
+    },
+    "jaeger": {
+      "name": "Jaeger Receiver",
+      "description": "Accepts Jaeger trace format",
+      "protocols": [
+        "gRPC (port 14250)",
+        "Thrift HTTP (port 14268)",
+        "Thrift Binary"
+      ],
+      "usage": "Migrate from Jaeger or support legacy Jaeger clients",
+      "signals": [
+        "Traces only"
+      ],
+      "configuration": "receivers:\n  jaeger:\n    protocols:\n      grpc:\n        endpoint: 0.0.0.0:14250\n      thrift_http:\n        endpoint: 0.0.0.0:14268\n      thrift_binary:\n        endpoint: 0.0.0.0:6832",
+      "functioning": "Receives Jaeger traces, converts to OTLP spans, maintains trace context",
+      "use_cases": [
+        "Legacy Jaeger instrumentation",
+        "Gradual migration to OTel",
+        "Support for Jaeger clients"
+      ]
+    },
+    "zipkin": {
+      "name": "Zipkin Receiver",
+      "description": "Accepts Zipkin trace format",
+      "protocols": [
+        "HTTP (port 9411)"
+      ],
+      "usage": "Support Zipkin-instrumented applications",
+      "signals": [
+        "Traces only"
+      ],
+      "configuration": "receivers:\n  zipkin:\n    endpoint: 0.0.0.0:9411",
+      "functioning": "Receives Zipkin JSON/Thrift traces, converts to OTLP format",
+      "use_cases": [
+        "Legacy Zipkin instrumentation",
+        "Spring Cloud Sleuth applications",
+        "Migration path to OTel"
+      ]
+    },
+    "filelog": {
+      "name": "Filelog Receiver",
+      "description": "Reads logs from files",
+      "protocols": [
+        "File system"
+      ],
+      "usage": "Collect logs from applications writing to files",
+      "signals": [
+        "Logs only"
+      ],
+      "configuration": "receivers:\n  filelog:\n    include: [/var/log/app/*.log]\n    operators:\n      - type: regex_parser\n        regex: '^(?P<time>\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}) (?P<level>\\w+) (?P<message>.*)$'",
+      "functioning": "Tails log files, parses structured formats, extracts attributes, forwards as log records",
+      "use_cases": [
+        "Legacy applications writing to files",
+        "System logs (/var/log)",
+        "Application logs without OTel SDK"
+      ]
+    },
+    "hostmetrics": {
+      "name": "Host Metrics Receiver",
+      "description": "Collects host/system metrics",
+      "protocols": [
+        "Local system calls"
+      ],
+      "usage": "Infrastructure monitoring",
+      "signals": [
+        "Metrics only"
+      ],
+      "configuration": "receivers:\n  hostmetrics:\n    collection_interval: 10s\n    scrapers:\n      cpu: {}\n      disk: {}\n      memory: {}\n      network: {}\n      load: {}",
+      "functioning": "Queries OS for CPU, memory, disk, network stats, emits as OTLP metrics",
+      "use_cases": [
+        "Server monitoring",
+        "Container host monitoring",
+        "Infrastructure observability"
+      ]
+    },
+    "kafka": {
+      "name": "Kafka Receiver",
+      "description": "Consumes telemetry from Kafka topics",
+      "protocols": [
+        "Kafka protocol"
+      ],
+      "usage": "Receive telemetry from Kafka pipelines",
+      "signals": [
+        "Traces",
+        "Metrics",
+        "Logs"
+      ],
+      "configuration": "receivers:\n  kafka:\n    brokers: [localhost:9092]\n    topic: otel-traces\n    group_id: otel-collector\n    encoding: otlp_proto",
+      "functioning": "Subscribes to Kafka topics, deserializes OTLP messages, forwards to pipeline",
+      "use_cases": [
+        "Async telemetry ingestion",
+        "High-volume buffering",
+        "Multi-consumer architectures"
+      ]
+    }
+  },
+  "major_exporters": {
+    "otlp": {
+      "name": "OTLP Exporter",
+      "description": "Universal OTLP protocol exporter",
+      "protocols": [
+        "gRPC (recommended)",
+        "HTTP"
+      ],
+      "usage": "Send to any OTLP-compatible backend",
+      "signals": [
+        "Traces",
+        "Metrics",
+        "Logs",
+        "Profiles"
+      ],
+      "configuration": "exporters:\n  otlp:\n    endpoint: backend.example.com:4317\n    compression: gzip\n    sending_queue:\n      enabled: true\n      num_consumers: 10\n      queue_size: 1000\n    retry_on_failure:\n      enabled: true\n      initial_interval: 5s\n      max_interval: 30s",
+      "functioning": "Serializes to Protocol Buffers, sends via gRPC/HTTP, handles retries and queuing",
+      "use_cases": [
+        "Vendor-neutral export",
+        "Multiple backend support",
+        "Production deployments"
+      ],
+      "supported_backends": [
+        "Datadog",
+        "New Relic",
+        "Grafana",
+        "Honeycomb",
+        "Elastic",
+        "Splunk",
+        "AWS X-Ray",
+        "Azure Monitor"
+      ]
+    },
+    "prometheus": {
+      "name": "Prometheus Exporter",
+      "description": "Exposes metrics in Prometheus format",
+      "protocols": [
+        "HTTP (pull-based)"
+      ],
+      "usage": "Allow Prometheus to scrape OTel metrics",
+      "signals": [
+        "Metrics only"
+      ],
+      "configuration": "exporters:\n  prometheus:\n    endpoint: 0.0.0.0:8889\n    namespace: otel\n    const_labels:\n      environment: production",
+      "functioning": "Converts OTLP metrics to Prometheus format, exposes HTTP endpoint for scraping",
+      "use_cases": [
+        "Existing Prometheus infrastructure",
+        "Prometheus + Grafana stack",
+        "On-premises metrics storage"
+      ]
+    },
+    "prometheusremotewrite": {
+      "name": "Prometheus Remote Write Exporter",
+      "description": "Pushes metrics to Prometheus remote write endpoint",
+      "protocols": [
+        "HTTP (push-based)"
+      ],
+      "usage": "Send metrics to Prometheus or compatible backends",
+      "signals": [
+        "Metrics only"
+      ],
+      "configuration": "exporters:\n  prometheusremotewrite:\n    endpoint: http://prometheus:9009/api/v1/write\n    resource_to_telemetry_conversion:\n      enabled: true",
+      "functioning": "Converts metrics to Prometheus remote write format, pushes to backend",
+      "use_cases": [
+        "Mimir, Cortex, Thanos backends",
+        "Cloud Prometheus services",
+        "Centralized metrics storage"
+      ]
+    },
+    "jaeger": {
+      "name": "Jaeger Exporter",
+      "description": "Exports traces to Jaeger backend",
+      "protocols": [
+        "gRPC",
+        "Thrift HTTP"
+      ],
+      "usage": "Use Jaeger for trace visualization",
+      "signals": [
+        "Traces only"
+      ],
+      "configuration": "exporters:\n  jaeger:\n    endpoint: jaeger-collector:14250\n    tls:\n      insecure: true",
+      "functioning": "Converts OTLP spans to Jaeger format, sends to Jaeger collector",
+      "use_cases": [
+        "Jaeger UI for trace visualization",
+        "Existing Jaeger infrastructure",
+        "Open-source tracing backend"
+      ]
+    },
+    "datadog": {
+      "name": "Datadog Exporter",
+      "description": "Native Datadog API exporter",
+      "protocols": [
+        "HTTP"
+      ],
+      "usage": "Send to Datadog APM with optimal format",
+      "signals": [
+        "Traces",
+        "Metrics",
+        "Logs"
+      ],
+      "configuration": "exporters:\n  datadog:\n    api:\n      key: ${DD_API_KEY}\n      site: datadoghq.com\n    host_metadata:\n      enabled: true\n      hostname_source: config_or_system",
+      "functioning": "Converts to Datadog-specific format, uses Datadog API, handles API keys",
+      "use_cases": [
+        "Datadog users wanting optimal integration",
+        "Full Datadog feature support",
+        "Datadog APM, Metrics, Logs"
+      ]
+    },
+    "elasticsearch": {
+      "name": "Elasticsearch Exporter",
+      "description": "Exports logs and traces to Elasticsearch",
+      "protocols": [
+        "HTTP"
+      ],
+      "usage": "Store telemetry in Elasticsearch for search",
+      "signals": [
+        "Traces",
+        "Logs"
+      ],
+      "configuration": "exporters:\n  elasticsearch:\n    endpoints: [http://elasticsearch:9200]\n    logs_index: otel-logs\n    traces_index: otel-traces",
+      "functioning": "Converts to Elasticsearch documents, bulk indexes, manages indices",
+      "use_cases": [
+        "ELK/EFK stack users",
+        "Long-term log storage",
+        "Full-text search on telemetry"
+      ]
+    },
+    "kafka": {
+      "name": "Kafka Exporter",
+      "description": "Publishes telemetry to Kafka topics",
+      "protocols": [
+        "Kafka protocol"
+      ],
+      "usage": "Fan out telemetry for multiple consumers",
+      "signals": [
+        "Traces",
+        "Metrics",
+        "Logs"
+      ],
+      "configuration": "exporters:\n  kafka:\n    brokers: [kafka:9092]\n    topic: otel-telemetry\n    encoding: otlp_proto\n    producer:\n      compression: gzip",
+      "functioning": "Serializes OTLP to Kafka messages, publishes to topics, handles backpressure",
+      "use_cases": [
+        "Multiple downstream consumers",
+        "Async processing pipelines",
+        "Telemetry buffering and replay"
+      ]
+    },
+    "file": {
+      "name": "File Exporter",
+      "description": "Writes telemetry to local files",
+      "protocols": [
+        "File system"
+      ],
+      "usage": "Local storage and debugging",
+      "signals": [
+        "Traces",
+        "Metrics",
+        "Logs"
+      ],
+      "configuration": "exporters:\n  file:\n    path: /tmp/otel-output.json\n    rotation:\n      max_megabytes: 100\n      max_days: 3",
+      "functioning": "Serializes to JSON, writes to files, handles rotation",
+      "use_cases": [
+        "Development and testing",
+        "Debugging pipeline issues",
+        "Local telemetry storage"
+      ]
+    },
+    "logging": {
+      "name": "Logging/Debug Exporter",
+      "description": "Logs telemetry to console",
+      "protocols": [
+        "stdout"
+      ],
+      "usage": "Debugging and troubleshooting",
+      "signals": [
+        "Traces",
+        "Metrics",
+        "Logs"
+      ],
+      "configuration": "exporters:\n  logging:\n    verbosity: detailed\n    sampling_initial: 5\n    sampling_thereafter: 200",
+      "functioning": "Pretty-prints telemetry to stdout, useful for seeing data flow",
+      "use_cases": [
+        "Troubleshooting pipelines",
+        "Verifying data flow",
+        "Development environments"
+      ]
+    }
+  }
+}

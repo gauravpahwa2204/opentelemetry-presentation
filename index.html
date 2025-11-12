@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenTelemetry Presentation</title>
+    <style>
+        :root {
+  /* Primitive Color Tokens */
+  --color-white: rgba(255, 255, 255, 1);
+  --color-black: rgba(0, 0, 0, 1);
+  --color-cream-50: rgba(252, 252, 249, 1);
+  --color-cream-100: rgba(255, 255, 253, 1);
+  --color-gray-200: rgba(245, 245, 245, 1);
+  --color-gray-300: rgba(167, 169, 169, 1);
+  --color-gray-400: rgba(119, 124, 124, 1);
+  --color-slate-500: rgba(98, 108, 113, 1);
+  --color-brown-600: rgba(94, 82, 64, 1);
+  --color-charcoal-700: rgba(31, 33, 33, 1);
+  --color-charcoal-800: rgba(38, 40, 40, 1);
+  --color-slate-900: rgba(19, 52, 59, 1);
+  --color-teal-300: rgba(50, 184, 198, 1);
+  --color-teal-400: rgba(45, 166, 178, 1);
+  --color-teal-500: rgba(33, 128, 141, 1);
+  --color-teal-600: rgba(29, 116, 128, 1);
+  --color-teal-700: rgba(26, 104, 115, 1);
+  --color-teal-800: rgba(41, 150, 161, 1);
+  --color-red-400: rgba(255, 84, 89, 1);
+  --color-red-500: rgba(192, 21, 47, 1);
+  --color-orange-400: rgba(230, 129, 97, 1);
+  --color-orange-500: rgba(168, 75, 47, 1);
+
+  --color-brown-600-rgb: 94, 82, 64;
+  --color-teal-500-rgb: 33, 128, 141;
+  --color-slate-900-rgb: 19, 52, 59;
+  --color-slate-500-rgb: 98, 108, 113;
+  --color-red-500-rgb: 192, 21, 47;
+  --color-red-400-rgb: 255, 84, 89;
+  --color-orange-500-rgb: 168, 75, 47;
+  --color-orange-400-rgb: 230, 129, 97;
+
+  --color-bg-1: rgba(59, 130, 246, 0.08);
+  --color-bg-2: rgba(245, 158, 11, 0.08);
+  --color-bg-3: rgba(34, 197, 94, 0.08);
+  --color-bg-4: rgba(239, 68, 68, 0.08);
+  --color-bg-5: rgba(147, 51, 234, 0.08);
+  --color-bg-6: rgba(249, 115, 22, 0.08);
+  --color-bg-7: rgba(236, 72, 153, 0.08);
+  --color-bg-8: rgba(6, 182, 212, 0.08);
+
+  --color-background: var(--color-cream-50);
+  --color-surface: var(--color-cream-100);
+  --color-text: var(--color-slate-900);
+  --color-text-secondary: var(--color-slate-500);
+  --color-primary: var(--color-teal-500);
+  --color-primary-hover: var(--color-teal-600);
+  --color-primary-active: var(--color-teal-700);
+  --color-secondary: rgba(var(--color-brown-600-rgb), 0.12);
+  --color-secondary-hover: rgba(var(--color-brown-600-rgb), 0.2);
+  --color-secondary-active: rgba(var(--color-brown-600-rgb), 0.25);
+  --color-border: rgba(var(--color-brown-600-rgb), 0.2);
+  --color-btn-primary-text: var(--color-cream-50);
+  --color-card-border: rgba(var(--color-brown-600-rgb), 0.12);
+  --color-card-border-inner: rgba(var(--color-brown-600-rgb), 0.12);
+  --color-error: var(--color-red-500);
+  --color-success: var(--color-teal-500);
+  --color-warning: var(--color-orange-500);
+  --color-info: var(--color-slate-500);
+  --color-focus-ring: rgba(var(--color-teal-500-rgb), 0.4);
+  --color-select-caret: rgba(var(--color-slate-900-rgb), 0.8);
+
+  --focus-ring: 0 0 0 3px var(--color-focus-ring);
+  --focus-outline: 2px solid var(--color-primary);
+
+  --font-family-base: "FKGroteskNeue", "Geist", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-family-mono: "Berkeley Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-size-xs: 11px;
+  --font-size-sm: 12px;
+  --font-size-base: 14px;
+  --font-size-md: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-2xl: 20px;
+  --font-size-3xl: 24px;
+  --font-size-4xl: 30px;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 550;
+  --font-weight-bold: 600;
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --letter-spacing-tight: -0.01em;
+
+  --space-0: 0;
+  --space-1: 1px;
+  --space-2: 2px;
+  --space-4: 4px;
+  --space-6: 6px;
+  --space-8: 8px;
+  --space-10: 10px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-20: 20px;
+  --space-24: 24px;
+  --space-32: 32px;
+
+  --radius-sm: 6px;
+  --radius-base: 8px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.02);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+  --shadow-inset-sm: inset 0 1px 0 rgba(255, 255, 255, 0.15), inset 0 -1px 0 rgba(0, 0, 0, 0.03);
+
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --ease-standard: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-gray-400-rgb: 119, 124, 124;
+    --color-teal-300-rgb: 50, 184, 198;
+    --color-gray-300-rgb: 167, 169, 169;
+    --color-gray-200-rgb: 245, 245, 245;
+
+    --color-bg-1: rgba(29, 78, 216, 0.15);
+    --color-bg-2: rgba(180, 83, 9, 0.15);
+    --color-bg-3: rgba(21, 128, 61, 0.15);
+    --color-bg-4: rgba(185, 28, 28, 0.15);
+    --color-bg-5: rgba(107, 33, 168, 0.15);
+    --color-bg-6: rgba(194, 65, 12, 0.15);
+    --color-bg-7: rgba(190, 24, 93, 0.15);
+    --color-bg-8: rgba(8, 145, 178, 0.15);
+
+    --color-background: var(--color-charcoal-700);
+    --color-surface: var(--color-charcoal-800);
+    --color-text: var(--color-gray-200);
+    --color-text-secondary: rgba(var(--color-gray-300-rgb), 0.7);
+    --color-primary: var(--color-teal-300);
+    --color-primary-hover: var(--color-teal-400);
+    --color-primary-active: var(--color-teal-800);
+    --color-secondary: rgba(var(--color-gray-400-rgb), 0.15);
+    --color-secondary-hover: rgba(var(--color-gray-400-rgb), 0.25);
+    --color-secondary-active: rgba(var(--color-gray-400-rgb), 0.3);
+    --color-border: rgba(var(--color-gray-400-rgb), 0.3);
+    --color-error: var(--color-red-400);
+    --color-success: var(--color-teal-300);
+    --color-warning: var(--color-orange-400);
+    --color-info: var(--color-gray-300);
+    --color-focus-ring: rgba(var(--color-teal-300-rgb), 0.4);
+    --color-btn-primary-text: var(--color-slate-900);
+    --color-card-border: rgba(var(--color-gray-400-rgb), 0.2);
+    --color-card-border-inner: rgba(var(--color-gray-400-rgb), 0.15);
+    --shadow-inset-sm: inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+  }
+}
+
+@font-face {
+  font-family: 'FKGroteskNeue';
+  src: url('https://r2cdn.perplexity.ai/fonts/FKGroteskNeue.woff2') format('woff2');
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-family-base);
+    background-color: var(--color-background);
+    color: var(--color-text);
+    overflow: hidden;
+}
+
+.presentation-container {
+    display: flex;
+    height: 100vh;
+}
+
+.sidebar {
+    width: 220px;
+    background-color: var(--color-surface);
+    border-right: 1px solid var(--color-border);
+    overflow-y: auto;
+    padding: var(--space-16);
+}
+
+.sidebar-title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--space-16);
+    color: var(--color-primary);
+}
+
+.thumbnail {
+    padding: var(--space-12);
+    margin-bottom: var(--space-8);
+    border-radius: var(--radius-base);
+    cursor: pointer;
+    transition: all var(--duration-fast) var(--ease-standard);
+    border: 1px solid var(--color-card-border);
+    background-color: var(--color-background);
+}
+
+.thumbnail:hover {
+    background-color: var(--color-secondary-hover);
+    border-color: var(--color-primary);
+}
+
+.thumbnail.active {
+    background-color: var(--color-primary);
+    color: var(--color-btn-primary-text);
+    border-color: var(--color-primary);
+}
+
+.thumbnail-number {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--space-4);
+}
+
+.thumbnail-title {
+    font-size: var(--font-size-sm);
+    line-height: 1.3;
+}
+
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.slide-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-32);
+    overflow: auto;
+}
+
+.slide {
+    background-color: var(--color-surface);
+    border-radius: var(--radius-lg);
+    padding: 60px;
+    width: 100%;
+    max-width: 900px;
+    min-height: 500px;
+    max-height: 700px;
+    overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--color-card-border);
+    animation: slideIn 0.3s var(--ease-standard);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.slide.title-slide {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.slide-title {
+    font-size: 42px;
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--space-24);
+    color: var(--color-primary);
+    line-height: var(--line-height-tight);
+}
+
+.slide.title-slide .slide-title {
+    font-size: 64px;
+    margin-bottom: var(--space-16);
+}
+
+.slide-subtitle {
+    font-size: var(--font-size-3xl);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-32);
+    font-weight: var(--font-weight-medium);
+}
+
+.slide-content {
+    font-size: var(--font-size-xl);
+    line-height: 1.8;
+}
+
+.slide-content ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.slide-content li {
+    margin-bottom: var(--space-16);
+    padding-left: var(--space-32);
+    position: relative;
+    font-size: var(--font-size-lg);
+}
+
+.slide-content li:before {
+    content: "•";
+    color: var(--color-primary);
+    font-weight: bold;
+    font-size: 24px;
+    position: absolute;
+    left: 0;
+}
+
+.slide-content strong {
+    color: var(--color-primary);
+    font-weight: var(--font-weight-semibold);
+}
+
+.slide-content code {
+    background-color: var(--color-secondary);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-base);
+}
+
+.tagline {
+    font-size: var(--font-size-2xl);
+    color: var(--color-text);
+    margin-bottom: var(--space-12);
+    font-weight: var(--font-weight-medium);
+}
+
+.controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-16) var(--space-32);
+    background-color: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+}
+
+.nav-buttons {
+    display: flex;
+    gap: var(--space-12);
+}
+
+.btn {
+    padding: var(--space-10) var(--space-20);
+    border: none;
+    border-radius: var(--radius-base);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: all var(--duration-fast) var(--ease-standard);
+    font-family: var(--font-family-base);
+}
+
+.btn-primary {
+    background-color: var(--color-primary);
+    color: var(--color-btn-primary-text);
+}
+
+.btn-primary:hover:not(:disabled) {
+    background-color: var(--color-primary-hover);
+}
+
+.btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.slide-counter {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    font-weight: var(--font-weight-medium);
+}
+
+.progress-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background-color: var(--color-primary);
+    transition: width var(--duration-normal) var(--ease-standard);
+}
+
+.architecture-diagram {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: var(--space-32) 0;
+    gap: var(--space-16);
+}
+
+.architecture-box {
+    background-color: var(--color-bg-1);
+    border: 2px solid var(--color-primary);
+    border-radius: var(--radius-md);
+    padding: var(--space-16);
+    text-align: center;
+    font-weight: var(--font-weight-semibold);
+    flex: 1;
+}
+
+.architecture-arrow {
+    color: var(--color-primary);
+    font-size: 24px;
+    font-weight: bold;
+}
+
+@media print {
+    .sidebar, .controls {
+        display: none;
+    }
+    .slide {
+        box-shadow: none;
+        page-break-after: always;
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 180px;
+    }
+    .slide {
+        padding: var(--space-32);
+    }
+    .slide-title {
+        font-size: 32px;
+    }
+    .slide.title-slide .slide-title {
+        font-size: 42px;
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-title">Slides</div>
+            <div id="thumbnails"></div>
+        </div>
+        
+        <div class="main-content">
+            <div class="progress-bar" id="progressBar"></div>
+            
+            <div class="slide-container" id="slideContainer">
+                <!-- Slides will be dynamically inserted here -->
+            </div>
+            
+            <div class="controls">
+                <div class="nav-buttons">
+                    <button class="btn btn-primary" id="prevBtn" onclick="previousSlide()">← Previous</button>
+                    <button class="btn btn-primary" id="nextBtn" onclick="nextSlide()">Next →</button>
+                </div>
+                <div class="slide-counter" id="slideCounter"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const slides = [
+            {
+                number: 1,
+                title: "OpenTelemetry",
+                subtitle: "Unified Observability Framework",
+                type: "title",
+                content: [
+                    "Traces • Metrics • Logs • Profiles",
+                    "One API, One SDK, One Protocol",
+                    "Industry Standard for Observability"
+                ]
+            },
+            {
+                number: 2,
+                title: "Agenda",
+                content: [
+                    "Why Telemetry?",
+                    "Four Signals: Metrics, Logs, Traces, Profiles",
+                    "Problems Without Standards",
+                    "OpenTelemetry Architecture",
+                    "OTLP Protocol and Collector",
+                    "Distributed Tracing",
+                    "Deployment Modes",
+                    "Processing and Enrichment",
+                    "OpenTelemetry vs StatsD"
+                ]
+            },
+            {
+                number: 3,
+                title: "Why Telemetry?",
+                content: [
+                    "Visibility into system behavior and performance",
+                    "Proactive issue detection before user impact",
+                    "Performance optimization and bottleneck identification",
+                    "User experience insights and quality metrics",
+                    "Cost control and resource optimization"
+                ]
+            },
+            {
+                number: 4,
+                title: "How Telemetry Helps Microservices",
+                content: [
+                    "End-to-end request tracking across services",
+                    "Service dependency mapping and visualization",
+                    "Bottleneck identification in complex workflows",
+                    "Individual service health and performance monitoring",
+                    "Rapid root cause analysis in distributed systems"
+                ]
+            },
+            {
+                number: 5,
+                title: "Telemetry Signal #1: Metrics",
+                content: [
+                    "Numerical measurements captured at regular intervals",
+                    "<strong>Types:</strong> Counter (increasing), UpDownCounter (variable), Gauge (point-in-time), Histogram (distribution)",
+                    "<strong>Examples:</strong> HTTP requests, error rate, CPU usage, latency percentiles",
+                    "<strong>Use for:</strong> Monitoring trends, setting alerts, understanding overall health"
+                ]
+            },
+            {
+                number: 6,
+                title: "Metrics in Action",
+                type: "visual",
+                image: "https://pplx-res.cloudinary.com/image/upload/v1762940651/search_images/93976bb26a7c96de935b4e60cebf665fb46971d4.jpg",
+                description: "Real-time metrics visualization showing CPU, memory, network graphs",
+                content: [
+                    "Time-series graphs for trends analysis",
+                    "Multiple metrics on single dashboard",
+                    "Alerting thresholds and annotations",
+                    "Percentile calculations (P50, P95, P99)"
+                ]
+            },
+            {
+                number: 7,
+                title: "Telemetry Signal #2: Logs",
+                content: [
+                    "Timestamped text records of discrete events",
+                    "<strong>Components:</strong> Timestamp, Severity, Message, Attributes, Trace Context",
+                    "<strong>Examples:</strong> Errors, audit trails, debug information, business events",
+                    "<strong>Use for:</strong> Detailed debugging, compliance, investigating specific events"
+                ]
+            },
+            {
+                number: 8,
+                title: "Logs in Action",
+                type: "visual",
+                image: "https://pplx-res.cloudinary.com/image/upload/v1762940651/search_images/f2787dfe77b0ed31a883b8cd7aba605199352796.jpg",
+                description: "Structured log entries with timestamps, severity, and attributes",
+                content: [
+                    "Timestamped events with full context",
+                    "Severity filtering (INFO, WARN, ERROR)",
+                    "Searchable attributes and fields",
+                    "Trace context for correlation"
+                ]
+            },
+            {
+                number: 9,
+                title: "Telemetry Signal #3: Traces",
+                content: [
+                    "Records of request flow through distributed systems",
+                    "<strong>Components:</strong> Trace ID, Spans, Parent-child relationships, Attributes",
+                    "<strong>Examples:</strong> Request tracking, performance analysis, dependency mapping",
+                    "<strong>Use for:</strong> Understanding request flows, identifying latency, debugging transactions"
+                ]
+            },
+            {
+                number: 10,
+                title: "Traces in Action",
+                type: "visual",
+                description: "Distributed tracing waterfall view",
+                content: [
+                    "Waterfall timeline showing span hierarchy",
+                    "Parent-child span relationships visible",
+                    "Latency breakdown by service and operation",
+                    "Error spans highlighted in red",
+                    "Complete end-to-end request visibility"
+                ]
+            },
+            {
+                number: 11,
+                title: "Telemetry Signal #4: Profiles",
+                content: [
+                    "Continuous performance data showing code-level resource consumption",
+                    "<strong>Captures:</strong> CPU per function, memory allocation, thread behavior, call stacks",
+                    "<strong>Use for:</strong> Code optimization, identifying hotspots, detecting memory leaks",
+                    "<strong>Status:</strong> Newest signal, added to OpenTelemetry in 2024 (experimental)"
+                ]
+            },
+            {
+                number: 12,
+                title: "Profiles in Action",
+                type: "visual",
+                image: "https://pplx-res.cloudinary.com/image/upload/v1762940674/search_images/597cdebbf93cda02206d875869cc2b44ed08ab0c.jpg",
+                description: "Continuous profiling flame graph with function call stacks",
+                content: [
+                    "Flame graph shows CPU time per function",
+                    "Width = time spent, Height = call stack depth",
+                    "Identify performance hotspots at code level",
+                    "Continuous profiling catches regressions immediately"
+                ]
+            },
+            {
+                number: 13,
+                title: "Problems Without Standard Formats",
+                content: [
+                    "<strong>Vendor lock-in:</strong> Proprietary instrumentation ties you to specific vendors",
+                    "<strong>Different formats:</strong> Inconsistent attribute naming across vendors",
+                    "<strong>Reinstrumentation costs:</strong> Switching vendors requires rewriting telemetry code",
+                    "<strong>Limited interoperability:</strong> Tools don't work together across vendors",
+                    "<strong>Data silos:</strong> Telemetry scattered across incompatible systems"
+                ]
+            },
+            {
+                number: 14,
+                title: "OpenTelemetry Core Principles",
+                content: [
+                    "<strong>One unified API:</strong> Standardized across all languages",
+                    "<strong>One SDK and data model:</strong> Consistent telemetry representation",
+                    "<strong>One protocol:</strong> OTLP (OpenTelemetry Protocol)",
+                    "<strong>Cross-language support:</strong> 11+ languages supported",
+                    "<strong>No vendor lock-in:</strong> Industry standard framework"
+                ]
+            },
+            {
+                number: 15,
+                title: "Complete OpenTelemetry Architecture Flow",
+                type: "visual",
+                image: "https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/0b209560f39fdc36bdb3e26c72bf4bbc/cedcd60f-3bac-4d12-934e-f8417a5504d6/ee0c758d.png",
+                description: "Architecture diagram showing data sources → Collector (Receivers → Processors → Exporters) → Backends",
+                content: [
+                    "End-to-end telemetry data journey",
+                    "Multiple receivers accept from various sources",
+                    "Unified processing pipeline with enrichment",
+                    "Multiple exporters send to any backend",
+                    "Vendor-neutral, flexible architecture"
+                ]
+            },
+            {
+                number: 16,
+                title: "One Protocol: OTLP",
+                content: [
+                    "OpenTelemetry Protocol for transmitting all telemetry data",
+                    "<strong>Encoding:</strong> Protocol Buffers (efficient binary serialization)",
+                    "<strong>Transport options:</strong> gRPC (recommended), HTTP/Protobuf, HTTP/JSON",
+                    "<strong>Benefits:</strong> Language-agnostic, efficient, standardized across all signals",
+                    "<strong>Performance:</strong> ~1-2% CPU overhead, supports compression"
+                ]
+            },
+            {
+                number: 17,
+                title: "OTLP Protocol - Deep Dive",
+                type: "visual",
+                image: "https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/0b209560f39fdc36bdb3e26c72bf4bbc/8b9c7bae-8274-4972-b21a-9aa7e2035468/fd9c3c95.png",
+                description: "OTLP protocol stack diagram showing 5 layers and 3 transport options",
+                content: [
+                    "Five-layer protocol: SDK → Data Model → Protobuf → Transport → Network",
+                    "gRPC (port 4317) - Recommended for production",
+                    "HTTP/Protobuf (port 4318) - Firewall friendly",
+                    "HTTP/JSON (port 4318) - Human readable, debugging",
+                    "70-75% size reduction vs JSON, ~1-2% CPU overhead"
+                ]
+            },
+            {
+                number: 18,
+                title: "One Collector",
+                content: [
+                    "Vendor-agnostic proxy for telemetry processing",
+                    "<strong>Three-stage architecture:</strong> Receivers → Processors → Exporters",
+                    "40+ receiver types, 20+ exporters available",
+                    "Supports all telemetry signals: traces, metrics, logs, profiles",
+                    "Eliminates need for multiple vendor-specific agents"
+                ]
+            },
+            {
+                number: 19,
+                title: "Collector: Receivers",
+                content: [
+                    "<strong>OTLP Receiver:</strong> Native OpenTelemetry protocol (gRPC/HTTP)",
+                    "<strong>Jaeger Receiver:</strong> Ingests Jaeger trace format",
+                    "<strong>Prometheus Receiver:</strong> Scrapes Prometheus metrics endpoints",
+                    "<strong>Zipkin Receiver:</strong> Accepts Zipkin traces",
+                    "40+ receiver types for various data sources"
+                ]
+            },
+            {
+                number: 20,
+                title: "Major Receivers - Deep Dive",
+                type: "detailed",
+                content: [
+                    "<strong>OTLP Receiver:</strong> Native OTel protocol (gRPC/HTTP) • All signals • Ports 4317/4318 • Primary for production",
+                    "<strong>Prometheus Receiver:</strong> Scrapes /metrics endpoints • Metrics only • Pull-based • Migrate from Prometheus",
+                    "<strong>Jaeger Receiver:</strong> Legacy Jaeger traces • Port 14250 (gRPC) • Migration path to OTel",
+                    "<strong>Zipkin Receiver:</strong> Legacy Zipkin traces • Port 9411 • Spring Cloud Sleuth support",
+                    "<strong>Filelog Receiver:</strong> Reads log files • Regex parsing • Legacy app logs",
+                    "<strong>Host Metrics Receiver:</strong> CPU, memory, disk, network • Infrastructure monitoring",
+                    "<strong>Kafka Receiver:</strong> Async telemetry ingestion • High-volume buffering"
+                ]
+            },
+            {
+                number: 21,
+                title: "Collector: Processors",
+                content: [
+                    "<strong>Memory Limiter:</strong> Prevents OOM crashes (ALWAYS FIRST)",
+                    "<strong>Batch Processor:</strong> Groups data for efficient export (TYPICALLY LAST)",
+                    "<strong>K8s Attributes:</strong> Enriches with Kubernetes metadata",
+                    "<strong>Attributes Processor:</strong> Adds/modifies/deletes attributes",
+                    "<strong>Tail Sampling:</strong> Intelligent sampling after complete trace",
+                    "<strong>Resource Processor:</strong> Modifies resource-level attributes"
+                ]
+            },
+            {
+                number: 22,
+                title: "Collector: Exporters",
+                content: [
+                    "<strong>OTLP Exporter:</strong> Universal protocol to any OTLP-compatible backend",
+                    "<strong>Prometheus Exporter:</strong> Exposes metrics in Prometheus format",
+                    "<strong>Jaeger Exporter:</strong> Sends traces to Jaeger",
+                    "Multiple exporters can receive same data simultaneously",
+                    "20+ exporters for different backends and use cases"
+                ]
+            },
+            {
+                number: 23,
+                title: "Major Exporters - Deep Dive",
+                type: "detailed",
+                content: [
+                    "<strong>OTLP Exporter (Universal):</strong> All signals • Send to any OTLP backend • Vendor-neutral • 100+ compatible backends",
+                    "<strong>Prometheus Exporter:</strong> Metrics • Exposes /metrics endpoint • Prometheus scraping • Grafana integration",
+                    "<strong>Datadog Exporter:</strong> All signals • Native Datadog API • Optimal integration • All Datadog features",
+                    "<strong>Jaeger Exporter:</strong> Traces • Jaeger UI visualization • Open-source tracing",
+                    "<strong>Elasticsearch Exporter:</strong> Traces & Logs • ELK/EFK stack • Full-text search • Log storage",
+                    "<strong>Kafka Exporter:</strong> All signals • Publish to Kafka topics • Multiple consumers • Async processing",
+                    "<strong>File Exporter:</strong> All signals • Local file storage • Development/testing",
+                    "<strong>Logging Exporter:</strong> All signals • Console output • Debugging pipelines"
+                ]
+            },
+            {
+                number: 24,
+                title: "Collector Architecture",
+                content: [
+                    "<strong>Three-stage pipeline:</strong> Receivers → Processors → Exporters",
+                    "Multiple receivers can feed from different sources",
+                    "Processors execute in order listed in configuration",
+                    "Multiple exporters can export to different backends",
+                    "Flexible, modular, and highly configurable"
+                ]
+            },
+            {
+                number: 25,
+                title: "Distributed Tracing Basics",
+                content: [
+                    "<strong>Trace:</strong> Complete journey of request through distributed system",
+                    "<strong>Span:</strong> Single unit of work representing an operation",
+                    "<strong>Trace ID:</strong> Globally unique identifier for entire trace",
+                    "<strong>Span ID:</strong> Unique identifier for a span",
+                    "<strong>Parent Span ID:</strong> Links child spans to parents"
+                ]
+            },
+            {
+                number: 26,
+                title: "Spans and Context Propagation",
+                content: [
+                    "<strong>Span components:</strong> ID, parent, timestamps, attributes, status",
+                    "<strong>Context propagation:</strong> W3C Trace Context standard via headers",
+                    "<strong>Parent-child relationships:</strong> Hierarchical operation structure",
+                    "<strong>Importance:</strong> Maintains continuity across service boundaries",
+                    "<strong>Without it:</strong> Traces fragment and correlation becomes impossible"
+                ]
+            },
+            {
+                number: 27,
+                title: "Deployment Modes: Overview",
+                content: [
+                    "Three patterns for deploying OpenTelemetry Collector",
+                    "<strong>Agent Mode:</strong> Runs close to workload",
+                    "<strong>Gateway Mode:</strong> Centralized collectors",
+                    "<strong>Hybrid Mode:</strong> Agents + Gateway combined",
+                    "Choose based on architecture and requirements"
+                ]
+            },
+            {
+                number: 28,
+                title: "Deployment: Agent Mode",
+                content: [
+                    "Collector runs as DaemonSet or Sidecar on same host/pod",
+                    "<strong>Pros:</strong> Low latency, local collection, reduced network dependency",
+                    "<strong>Cons:</strong> More resource overhead, distributed configuration",
+                    "<strong>Use when:</strong> Collecting host metrics, Kubernetes environments",
+                    "<strong>Trade-off:</strong> Resource cost vs latency benefit"
+                ]
+            },
+            {
+                number: 29,
+                title: "Deployment: Gateway Mode",
+                content: [
+                    "Centralized collectors with load balancer",
+                    "<strong>Pros:</strong> Central config, efficient resources, advanced processing",
+                    "<strong>Cons:</strong> Network hop adds latency, requires load balancing",
+                    "<strong>Use when:</strong> Tail sampling needed, multi-cluster aggregation",
+                    "<strong>Trade-off:</strong> Infrastructure complexity vs operational simplicity"
+                ]
+            },
+            {
+                number: 30,
+                title: "Deployment: Hybrid Mode",
+                content: [
+                    "Combines Agent and Gateway patterns",
+                    "<strong>Architecture:</strong> Applications → Agents (local) → Gateway (central) → Backends",
+                    "<strong>Pros:</strong> Best of both worlds, flexible scaling, optimized resource usage",
+                    "<strong>Cons:</strong> More complex setup, additional operational overhead",
+                    "<strong>Best for:</strong> Enterprise deployments, multi-cluster Kubernetes"
+                ]
+            },
+            {
+                number: 31,
+                title: "Processing and Enrichment",
+                content: [
+                    "<strong>Attributes:</strong> <code>container_id</code>, <code>k8s.pod.name</code>, <code>k8s.namespace</code>, <code>environment</code>",
+                    "<strong>Sampling:</strong> Control data volume while retaining important traces",
+                    "<strong>Batching:</strong> Group data for efficient export, reduce network overhead",
+                    "<strong>Retry strategies:</strong> Automatic retry with exponential backoff",
+                    "All configurable at Collector level"
+                ]
+            },
+            {
+                number: 32,
+                title: "Sampling Strategies: Head-based vs Tail-based",
+                type: "visual",
+                image: "https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/0b209560f39fdc36bdb3e26c72bf4bbc/613270c9-7bef-450d-84cd-44da43c26471/9131331f.png",
+                description: "Comparison diagram of head vs tail sampling",
+                content: [
+                    "<strong>Head-based:</strong> Decision at trace start, fast, may miss errors",
+                    "<strong>Tail-based:</strong> Decision after complete trace, intelligent, captures all errors",
+                    "Head: Low memory, zero latency impact",
+                    "Tail: Higher memory, decision_wait latency, policy-based",
+                    "<strong>Hybrid approach:</strong> Head sample 50%, tail sample on collector"
+                ]
+            },
+            {
+                number: 33,
+                title: "OpenTelemetry vs StatsD",
+                content: [
+                    "<strong>Scope:</strong> OTel (traces, metrics, logs, profiles) vs StatsD (metrics only)",
+                    "<strong>Architecture:</strong> Full framework vs simple network daemon",
+                    "<strong>Protocol:</strong> OTLP (gRPC/HTTP/Protobuf) vs StatsD (UDP fire-and-forget)",
+                    "<strong>Tracing:</strong> Native in OTel, not supported in StatsD",
+                    "<strong>Verdict:</strong> OTel for modern microservices, StatsD for legacy systems"
+                ]
+            },
+            {
+                number: 34,
+                title: "Key Benefits of OpenTelemetry",
+                content: [
+                    "<strong>Cross-language support:</strong> 11+ languages (Java, Python, Go, .NET, JS, etc.)",
+                    "<strong>Extensible:</strong> Custom processors and exporters",
+                    "<strong>Interoperable:</strong> Works with Prometheus, Jaeger, Zipkin, and more",
+                    "<strong>No vendor lock-in:</strong> Switch backends without code changes",
+                    "<strong>Industry standard:</strong> CNCF project with major vendor backing"
+                ]
+            },
+            {
+                number: 35,
+                title: "Getting Started",
+                content: [
+                    "Instrument application with OTel SDK for your language",
+                    "Deploy OpenTelemetry Collector in your environment",
+                    "Configure receivers (what data to collect)",
+                    "Configure processors (how to transform/enrich data)",
+                    "Configure exporters (where to send data)",
+                    "Monitor and adjust sampling and batching"
+                ]
+            },
+            {
+                number: 36,
+                title: "Conclusion",
+                content: [
+                    "OpenTelemetry is the industry standard for observability",
+                    "Unified framework eliminates vendor lock-in",
+                    "Supports comprehensive telemetry: traces, metrics, logs, profiles",
+                    "Flexible deployment options for any scale",
+                    "Essential for modern cloud-native applications"
+                ]
+            }
+        ];
+
+        let currentSlide = 0;
+
+        function renderSlide(index) {
+            const slide = slides[index];
+            const slideContainer = document.getElementById('slideContainer');
+            
+            let slideHTML = `<div class="slide ${slide.type === 'title' ? 'title-slide' : ''}">`;
+            
+            slideHTML += `<h1 class="slide-title">${slide.title}</h1>`;
+            
+            if (slide.subtitle) {
+                slideHTML += `<p class="slide-subtitle">${slide.subtitle}</p>`;
+            }
+            
+            // Handle visual slides with images
+            if (slide.type === 'visual') {
+                if (slide.image) {
+                    slideHTML += `<div style="text-align: center; margin: 24px 0;">`;
+                    slideHTML += `<img src="${slide.image}" alt="${slide.description}" style="max-width: 90%; max-height: 400px; border: 2px solid var(--color-card-border); border-radius: var(--radius-md); box-shadow: var(--shadow-md);" />`;
+                    if (slide.description) {
+                        slideHTML += `<p style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-top: var(--space-12); font-style: italic;">${slide.description}</p>`;
+                    }
+                    slideHTML += '</div>';
+                } else if (slide.description) {
+                    slideHTML += `<div style="background-color: var(--color-bg-1); padding: var(--space-24); border-radius: var(--radius-md); margin: var(--space-24) 0; text-align: center; border: 2px solid var(--color-primary);">`;
+                    slideHTML += `<p style="font-size: var(--font-size-lg); font-weight: var(--font-weight-medium);">${slide.description}</p>`;
+                    slideHTML += '</div>';
+                }
+            }
+            
+            if (slide.content && slide.content.length > 0) {
+                if (slide.type === 'title') {
+                    slideHTML += '<div class="slide-content">';
+                    slide.content.forEach(item => {
+                        slideHTML += `<p class="tagline">${item}</p>`;
+                    });
+                    slideHTML += '</div>';
+                } else if (slide.number === 24) {
+                    slideHTML += '<div class="architecture-diagram">';
+                    slideHTML += '<div class="architecture-box">Receivers</div>';
+                    slideHTML += '<div class="architecture-arrow">→</div>';
+                    slideHTML += '<div class="architecture-box">Processors</div>';
+                    slideHTML += '<div class="architecture-arrow">→</div>';
+                    slideHTML += '<div class="architecture-box">Exporters</div>';
+                    slideHTML += '</div>';
+                    slideHTML += '<div class="slide-content"><ul>';
+                    slide.content.forEach(item => {
+                        slideHTML += `<li>${item}</li>`;
+                    });
+                    slideHTML += '</ul></div>';
+                } else {
+                    slideHTML += '<div class="slide-content"><ul>';
+                    slide.content.forEach(item => {
+                        slideHTML += `<li>${item}</li>`;
+                    });
+                    slideHTML += '</ul></div>';
+                }
+            }
+            
+            slideHTML += '</div>';
+            
+            slideContainer.innerHTML = slideHTML;
+            updateControls();
+            updateThumbnails();
+            updateProgressBar();
+        }
+
+        function renderThumbnails() {
+            const thumbnailContainer = document.getElementById('thumbnails');
+            thumbnailContainer.innerHTML = '';
+            
+            slides.forEach((slide, index) => {
+                const thumbnail = document.createElement('div');
+                thumbnail.className = 'thumbnail';
+                thumbnail.onclick = () => goToSlide(index);
+                thumbnail.innerHTML = `
+                    <div class="thumbnail-number">Slide ${slide.number}</div>
+                    <div class="thumbnail-title">${slide.title}</div>
+                `;
+                thumbnailContainer.appendChild(thumbnail);
+            });
+        }
+
+        function updateThumbnails() {
+            const thumbnails = document.querySelectorAll('.thumbnail');
+            thumbnails.forEach((thumb, index) => {
+                if (index === currentSlide) {
+                    thumb.classList.add('active');
+                } else {
+                    thumb.classList.remove('active');
+                }
+            });
+        }
+
+        function updateControls() {
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === slides.length - 1;
+            document.getElementById('slideCounter').textContent = `Slide ${currentSlide + 1} of ${slides.length}`;
+        }
+
+        function updateProgressBar() {
+            const progress = ((currentSlide + 1) / slides.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function nextSlide() {
+            if (currentSlide < slides.length - 1) {
+                currentSlide++;
+                renderSlide(currentSlide);
+            }
+        }
+
+        function previousSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                renderSlide(currentSlide);
+            }
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            renderSlide(currentSlide);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                previousSlide();
+            }
+        });
+
+        // Initialize
+        renderThumbnails();
+        renderSlide(0);
+    </script>
+</body>
+</html>
